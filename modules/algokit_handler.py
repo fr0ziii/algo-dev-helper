@@ -1,18 +1,31 @@
+"""
+Handles requests related to AlgoKit CLI commands.
+
+This module is responsible for:
+- Loading AlgoKit command definitions (summary, documentation URL) from a JSON file.
+- Providing a function to search user queries for known AlgoKit command names.
+- Returning formatted help text for matched commands.
+"""
 import os
 import json
 from typing import Optional, Dict, Any
 
-# Define the path to the JSON file containing AlgoKit command details
-# Assumes the file is in the 'data' directory relative to this module's parent directory
+# --- Constants ---
+# Define the path to the JSON file containing AlgoKit command details.
+# It constructs the path relative to this script file, assuming the 'data' directory
+# is one level up from the 'modules' directory.
 COMMANDS_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'algokit_commands.json')
 
-# Global variable to cache the loaded AlgoKit commands data in memory
-# This avoids reloading the file on every call to get_algokit_help
+# --- Caching ---
+# Global variable to cache the loaded AlgoKit commands data in memory.
+# This avoids redundant file I/O by storing the data after the first load.
+# Initialized to None; will hold the dictionary once loaded.
 _algokit_commands_data: Optional[Dict[str, Any]] = None
 
-def load_algokit_commands(filepath: str = COMMANDS_FILE_PATH) -> Dict[str, Any]: # Added type hints
+# --- Core Functions ---
+def load_algokit_commands(filepath: str = COMMANDS_FILE_PATH) -> Dict[str, Any]:
     """
-    Loads the AlgoKit commands JSON file from the specified path.
+    Loads the AlgoKit commands data from a JSON file into memory.
 
     Includes basic caching: if the commands data has already been loaded,
     it returns the cached dictionary instead of reading the file again.
@@ -66,11 +79,13 @@ def load_algokit_commands(filepath: str = COMMANDS_FILE_PATH) -> Dict[str, Any]:
 
 def get_algokit_help(query: str) -> Optional[str]:
     """
-    Searches the user's query for a known AlgoKit command name.
+    Searches the user's query string for a known AlgoKit command name.
 
-    If a command name from the loaded `algokit_commands.json` is found
-    within the query, it retrieves the corresponding summary and documentation URL
-    and returns them in a formatted string.
+    It iterates through the command names loaded from `algokit_commands.json`.
+    If a known command name is detected within the query (using specific patterns
+    like "algokit [command]", "command [command]", or the command name as a distinct word),
+    it retrieves the command's summary and documentation URL.
+    Finally, it returns a formatted string suitable for display in Discord.
 
     Args:
         query (str): The user's query string.
@@ -97,11 +112,11 @@ def get_algokit_help(query: str) -> Optional[str]:
         # Current check: is the command name present as a substring?
         # Added check: is command name present as a distinct word?
         # Added check: is "algokit [command]" or "command [command]" present?
-        if (f"algokit {command_name}" in query_lower or
-            f"command {command_name}" in query_lower or
-            command_name in query_lower.split()): # Check if command is a distinct word
+        if (f"algokit {command_name}" in query_lower or  # e.g., "algokit deploy"
+            f"command {command_name}" in query_lower or  # e.g., "command deploy"
+            command_name in query_lower.split()):       # e.g., "what is deploy" (checks if 'deploy' is a whole word)
             found_command = command_name
-            break # Stop searching once the first match is found
+            break # Stop searching once the first matching command is found
 
     # --- Response Formatting ---
     # If a known command was found in the query
@@ -121,11 +136,12 @@ def get_algokit_help(query: str) -> Optional[str]:
         print(f"No specific AlgoKit command found in query: '{query}'")
         return None
 
-# Example usage block for testing the module directly
+# --- Example Usage / Direct Execution ---
 if __name__ == '__main__':
-    # This block runs only when the script is executed directly (e.g., python modules/algokit_handler.py)
-    # It's useful for isolated testing without running the full bot.
-    print("--- Running AlgoKit Handler Test ---")
+    # This block allows the script to be run directly for testing purposes
+    # (e.g., using `python modules/algokit_handler.py`).
+    # It demonstrates how to load the data and use the get_algokit_help function.
+    print("--- Running AlgoKit Handler Module Test ---")
     load_algokit_commands() # Ensure commands are loaded before testing get_algokit_help
     test_query = "Tell me about algokit deploy"
     help_text = get_algokit_help(test_query)

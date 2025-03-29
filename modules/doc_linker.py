@@ -1,19 +1,34 @@
+"""
+Handles requests for documentation links.
+
+This module is responsible for:
+- Loading documentation link mappings (topic, URL) from a JSON file.
+- Matching user queries against keywords associated with these links.
+- Returning a formatted string containing the best matching documentation link.
+"""
 import os
 import json
-import re
+import re  # Regular expressions for keyword extraction
 from typing import Optional, Dict, Any
 
-# Define the path to the JSON file containing document link mappings
-# Assumes the file is in the 'data' directory relative to this module's parent directory
+# --- Constants ---
+# Define the path to the JSON file containing document link mappings.
+# Constructs the path relative to this script, assuming the 'data' directory
+# is one level up from the 'modules' directory.
 DOC_LINKS_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'new_doc_links.json')
 
-# Global variable to cache the loaded document links data in memory
-# This avoids reloading the file on every call to get_doc_link
+# --- Caching ---
+# Global variable to cache the loaded document links data in memory.
+# This avoids redundant file I/O by storing the data after the first load.
+# Initialized to None; will hold the dictionary once loaded.
+# NOTE: Caching check is currently commented out in the load function, meaning
+# the file is reloaded every time load_doc_links is called (e.g., during on_ready).
 _doc_links_data: Optional[Dict[str, Any]] = None
 
-def load_doc_links(filepath: str = DOC_LINKS_FILE_PATH) -> Dict[str, Any]: # Added type hints
+# --- Core Functions ---
+def load_doc_links(filepath: str = DOC_LINKS_FILE_PATH) -> Dict[str, Any]:
     """
-    Loads the document links JSON file from the specified path.
+    Loads the document links data from a JSON file into memory.
 
     Includes basic caching (currently disabled by commenting out the check)
     and handles file not found or JSON decoding errors gracefully.
@@ -68,47 +83,77 @@ def load_doc_links(filepath: str = DOC_LINKS_FILE_PATH) -> Dict[str, Any]: # Add
 
 def get_doc_link(query: str) -> Optional[str]:
     """
-    Searches the loaded document links for a match based on keywords in the query.
-    Returns a formatted string with the link and topic, or None if no suitable match is found.
-    """
-    doc_links = load_doc_links() # Ensure links are loaded (uses cache if available)
-    if not doc_links:
-        print("Doc links data is empty, cannot find link.")
-        return None # Return early if no links data is available
+    Searches the loaded document links data for the best match based on keywords in the user's query.
 
-    # Extract potential keywords from the user's query (lowercase, words > 2 chars)
+    It extracts keywords from the query and compares them against keywords derived
+    from the keys (and potentially topics) in the loaded `new_doc_links.json` data.
+    A simple scoring mechanism (keyword overlap count) is used to find the best match.
+
+    Args:
+        query (str): The user's query string.
+
+    Returns:
+        Optional[str]: A formatted string containing the topic and URL of the best match,
+                       suitable for display in Discord (e.g., "Here's the documentation for **Topic**: <URL>").
+                       Returns None if no suitable match is found above the minimum threshold.
+    """
+    doc_links = load_doc_links() # Ensure links are loaded (reloads file if cache check is disabled)
+    if not doc_links:
+        # If the links data couldn't be loaded or is empty, we can't find a link.
+        print("Doc links data is empty, cannot find link.")
+        return None
+
+    # --- Keyword Extraction ---
+    # Extract potential keywords from the user's query.
+    # - Convert to lowercase for case-insensitive matching.
+    # - Use regex `\b\w+\b` to find whole words.
+    # - Filter out short words (<= 2 characters) as they are often less meaningful.
+    # - Store keywords in a set for efficient intersection calculation.
     query_keywords = set(word for word in re.findall(r'\b\w+\b', query.lower()) if len(word) > 2)
     if not query_keywords:
+        # If no suitable keywords are found in the query, matching is impossible.
         print(f"No useful keywords extracted from query: '{query}'")
-        return None # Return early if no keywords found in query
+        return None
 
     best_match_key = None
     highest_score = 0
 
-    # Iterate through the loaded link entries (key is the keyword combo, value is dict with topic/url)
+    # --- Matching Logic ---
+    # Iterate through each entry in the loaded document links dictionary.
+    # The 'key' often represents the primary keywords (e.g., "algokit installation").
+    # The 'data' is a dictionary containing 'topic' and 'url'.
     for key, data in doc_links.items():
-        # Extract keywords from the entry's key (e.g., "algokit installation")
+        # Extract keywords from the entry's key using the same logic as for the query.
         entry_keywords = set(word for word in re.findall(r'\b\w+\b', key.lower()) if len(word) > 2)
-        # Optionally, could also include keywords from the 'topic' field for broader matching:
-        # if 'topic' in data and isinstance(data['topic'], str):
-        #     entry_keywords.update(word for word in re.findall(r'\b\w+\b', data['topic'].lower()) if len(word) > 2)
 
-        # Calculate match score based on the number of overlapping keywords
+        # --- Optional: Enhance matching by including topic keywords ---
+        # Uncomment the following lines to also consider keywords from the 'topic' field
+        # for potentially broader matching.
+        # if 'topic' in data and isinstance(data['topic'], str):
+        #     topic_keywords = set(word for word in re.findall(r'\b\w+\b', data['topic'].lower()) if len(word) > 2)
+        #     entry_keywords.update(topic_keywords)
+        # --- End Optional Enhancement ---
+
+        # Calculate the match score as the number of common keywords between the query and the entry.
         match_score = len(query_keywords.intersection(entry_keywords))
 
-        # Update best match if current score is higher
+        # Keep track of the entry with the highest score found so far.
         if match_score > highest_score:
             highest_score = match_score
-            best_match_key = key
+            best_match_key = key # Store the key of the best matching entry
 
-    # Define a minimum score threshold to consider a match valid
-    min_score_threshold = 1 # Requires at least one keyword overlap
+    # --- Thresholding and Response Formatting ---
+    # Define a minimum score required to consider a match valid.
+    # This prevents returning irrelevant links based on very weak keyword overlap.
+    min_score_threshold = 1 # Requires at least one keyword to overlap. Adjust as needed.
 
-    # Check if a sufficiently good match was found
+    # Check if the best score found meets the minimum threshold.
     if highest_score >= min_score_threshold and best_match_key:
+        # Retrieve the data (topic, url) for the best matching key.
         match_data = doc_links[best_match_key]
-        topic = match_data.get('topic', best_match_key) # Use the entry key as a fallback topic name
-        url = match_data.get('url')
+        # Get the topic, using the key itself as a fallback if 'topic' is missing.
+        topic = match_data.get('topic', best_match_key)
+        url = match_data.get('url') # Get the URL.
 
         # Ensure both topic and URL exist before formatting the response
         if topic and url:
@@ -123,12 +168,16 @@ def get_doc_link(query: str) -> Optional[str]:
         # No match found meeting the threshold
         return None
 
-# Example usage block for testing the module directly
+# --- Example Usage / Direct Execution ---
 if __name__ == '__main__':
-    # This block runs only when the script is executed directly (e.g., python modules/doc_linker.py)
-    # It's useful for isolated testing without running the full bot.
+    # This block allows the script to be run directly for testing purposes
+    # (e.g., using `python modules/doc_linker.py`).
+    # It simulates loading data and tests the get_doc_link function with sample queries.
 
-    # Simulate loading data by manually setting the global cache variable
+    print("--- Running Doc Linker Module Test ---")
+    # --- Test Data Simulation ---
+    # Instead of reading the file, we manually create a dictionary to simulate
+    # the loaded data for isolated testing.
     _test_data = {
         "algokit installation": {"topic": "AlgoKit Installation", "url": "https://developer.algorand.org/docs/algokit/getting-started/"},
         "asa creation tutorial": {"topic": "ASA Creation Tutorial", "url": "https://developer.algorand.org/docs/tutorials/asa/"}
