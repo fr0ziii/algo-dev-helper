@@ -96,52 +96,52 @@ async def on_message(message: discord.Message): # Added type hint for clarity
         # 4. General Q&A (least specific, acts as a fallback)
         try:
             # --- Priority 1: AlgoKit Command Help Request ---
-            print("[DEBUG] Checking AlgoKit Handler...") # DEBUG LOG
+            # print("[DEBUG] Checking AlgoKit Handler...") # DEBUG LOG
             algokit_keywords = ["algokit", "command"]
             known_commands = algokit_handler.load_algokit_commands().keys() # Get known commands
             # Check if query contains 'algokit', 'command', or a known command name
             if any(keyword in query_lower for keyword in algokit_keywords) or any(cmd in query_lower for cmd in known_commands):
-                 print("[DEBUG] Attempting AlgoKit command lookup...") # DEBUG LOG
+                 # print("[DEBUG] Attempting AlgoKit command lookup...") # DEBUG LOG
                  response = algokit_handler.get_algokit_help(query)
-                 print(f"[DEBUG] AlgoKit handler response: {response}") # DEBUG LOG
+                 # print(f"[DEBUG] AlgoKit handler response: {response}") # DEBUG LOG
                  # If response is still None here, it means keywords like 'algokit' might
                  # have matched, but no specific command was identified by the handler.
                  # We allow it to fall through to the next checks.
 
             # --- Priority 2: Documentation Link Request ---
-            print(f"[DEBUG] Checking Docs Link... (response is None: {response is None})") # DEBUG LOG
+            # print(f"[DEBUG] Checking Docs Link... (response is None: {response is None})") # DEBUG LOG
             # Use 'elif' to ensure this only runs if the AlgoKit handler didn't provide a response.
             if response is None:
                 doc_keywords = ["doc", "link for", "documentation", "url for"]
                 # Check if query contains specific keywords indicating a doc link request
                 if any(keyword in query_lower for keyword in doc_keywords):
-                    print("[DEBUG] Attempting doc link lookup...") # DEBUG LOG
+                    # print("[DEBUG] Attempting doc link lookup...") # DEBUG LOG
                     response = doc_linker.get_doc_link(query)
-                    print(f"[DEBUG] Doc Linker response: {response}") # DEBUG LOG
+                    # print(f"[DEBUG] Doc Linker response: {response}") # DEBUG LOG
 
             # --- Priority 3: Network Status Request ---
-            print(f"[DEBUG] Checking Network Status... (response is None: {response is None})") # DEBUG LOG
+            # print(f"[DEBUG] Checking Network Status... (response is None: {response is None})") # DEBUG LOG
             # Use 'elif' to ensure this only runs if previous handlers didn't respond.
             # Check for keywords related to network status.
             if response is None and ("round" in query_lower or "network status" in query_lower or "block" in query_lower):
-                print("[DEBUG] Attempting network status lookup...") # DEBUG LOG
+                # print("[DEBUG] Attempting network status lookup...") # DEBUG LOG
                 # Determine preferred network (default to mainnet if not specified)
                 network_pref = "testnet" if "testnet" in query_lower else "mainnet"
                 response = await network_info.get_network_status_message(network_pref) # network_info is async
-                print(f"[DEBUG] Network Status response: {response}") # DEBUG LOG
+                # print(f"[DEBUG] Network Status response: {response}") # DEBUG LOG
 
             # --- Priority 4: General Q&A Fallback ---
-            print(f"[DEBUG] Checking Q&A... (response is None: {response is None}, query: '{query}')") # DEBUG LOG
+            # print(f"[DEBUG] Checking Q&A... (response is None: {response is None}, query: '{query}')") # DEBUG LOG
             # This is the final fallback if no specific keywords were matched above.
             # Only attempt if the query is not empty (i.e., user typed something after the prefix).
             if response is None and query:
-                print("[DEBUG] Attempting KB lookup...") # DEBUG LOG
+                # print("[DEBUG] Attempting KB lookup...") # DEBUG LOG
                 # Pass the original query (preserving case might be useful for some Q&A models/logic)
                 response = qa_handler.get_answer_from_kb(query)
-                print(f"[DEBUG] Q&A response: {response}") # DEBUG LOG
+                # print(f"[DEBUG] Q&A response: {response}") # DEBUG LOG
 
             # --- Handle Response / Fallback ---
-            print(f"[DEBUG] Final response before sending: {response}") # DEBUG LOG
+            # print(f"[DEBUG] Final response before sending: {response}") # DEBUG LOG
 
             # If any handler successfully generated a response string, send it.
             if response:
