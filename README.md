@@ -70,7 +70,7 @@ graph TD;
     H --> M[data/snippets.json];
 
     G -- AlgoNode API Call --> N[algosdk];
-    N --> O[AlgoNode (MainNet/TestNet)];
+    N --> O[AlgoNode];
 
     J --> P[Response];
     K --> P;
