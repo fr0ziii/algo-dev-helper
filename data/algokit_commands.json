@@ -1,1 +1,27 @@
-{}
+{
+  "bootstrap": {
+    "keywords": ["bootstrap", "setup", "dependencies", "install"],
+    "summary": "Expedited initial setup for any developer by installing and configuring dependencies and other key development environment setup activities.",
+    "url": "https://developer.algorand.org/docs/get-details/algokit/cli-reference/#bootstrap"
+  },
+  "deploy": {
+    "keywords": ["deploy", "contracts", "smart contracts"],
+    "summary": "Deploy smart contracts from AlgoKit compliant repository.",
+    "url": "https://developer.algorand.org/docs/get-details/algokit/cli-reference/#deploy"
+  },
+  "generate": {
+    "keywords": ["generate", "code", "client", "applicationclient", "arc32"],
+    "summary": "Generate code for an Algorand project (e.g., typed ApplicationClient from ARC-32 application.json).",
+    "url": "https://developer.algorand.org/docs/get-details/algokit/cli-reference/#generate"
+  },
+  "init": {
+    "keywords": ["init", "initialize", "project", "template", "new"],
+    "summary": "Initializes a new project from a template, including prompting for template specific questions to be used in template rendering.",
+    "url": "https://developer.algorand.org/docs/get-details/algokit/cli-reference/#init"
+  },
+  "localnet": {
+    "keywords": ["localnet", "sandbox", "network", "start", "stop", "reset", "status", "logs"],
+    "summary": "Manage the AlgoKit LocalNet (start, stop, reset, status, logs, explore, console).",
+    "url": "https://developer.algorand.org/docs/get-details/algokit/cli-reference/#localnet"
+  }
+}

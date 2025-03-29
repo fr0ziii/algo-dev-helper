@@ -12,19 +12,19 @@ It addresses the friction developers face due to information fragmentation, the 
 
 ## Status
 
-**Under Development (Hackathon MVP)**
+**MVP Complete (Hackathon Project)**
 
-This project was initiated during the Algorand Developer Retreat hackathon (March 2025). It is currently focused on implementing the Minimum Viable Product (MVP) features outlined below.
+This project was initiated and the Minimum Viable Product (MVP) was completed during the Algorand Developer Retreat hackathon (March 2025).
 
-## Features (MVP Goals)
+## Features
 
-The initial version aims to provide the following core functionalities:
+The current version provides the following core functionalities:
 
-*   **Knowledge-Based Q&A:** Answer questions about core Algorand concepts (ASA, ARC, TEAL, AVM, PPoS) and key AlgoKit 3.0 features based on the curated content from `dev.algorand.co/llms-small.txt`.
-*   **Contextual Documentation Linking:** Provide accurate deep-links to relevant sections (Tutorials, How-Tos, Concepts, Reference) of the official Algorand Developer Portal (`dev.algorand.co`) based on user queries.
-*   **AlgoKit 3.0 CLI Assistance:** Offer quick summaries and documentation links for core `algokit` commands (e.g., `init`, `bootstrap`, `compile`, `deploy`, `generate`).
-*   **Real-Time Network Information:** Fetch and display the current consensus round for Algorand MainNet and TestNet upon request.
-*   **Basic Interaction & Fallback:** Respond clearly to recognized commands and provide helpful fallback messages for unknown queries.
+*   **Knowledge-Based Q&A:** Answers questions about core Algorand concepts and AlgoKit features using keyword matching against `data/llms-small.txt`.
+*   **Contextual Documentation Linking:** Provides deep-links to the official Algorand Developer Portal (`dev.algorand.co`) based on keywords found in `data/new_doc_links.json`.
+*   **AlgoKit CLI Assistance:** Offers quick summaries and documentation links for core `algokit` commands (`init`, `bootstrap`, `deploy`, `generate`, `localnet`) based on data in `data/algokit_commands.json`. *(Note: `algokit compile` was planned but not found in the current CLI reference).*
+*   **Real-Time Network Information:** Fetches and displays the current consensus round for Algorand MainNet and TestNet using `algosdk` and AlgoNode.
+*   **Fallback:** Provides a helpful fallback message for unrecognized queries.
 
 **Stretch Goals (Potential additions if time permits during the hackathon):**
 
@@ -160,11 +160,11 @@ Follow these steps to set up the bot for local development:
     *   Create empty JSON mapping files:
         *   `touch data/new_doc_links.json`
         *   `touch data/algokit_commands.json`
-        *   (Optional for stretch goal) `touch data/snippets.json`
+        *   *(The `new_doc_links.json` and `algokit_commands.json` files are now populated in the repository).*
 
 ## Running the Bot Locally
 
-1.  Ensure your virtual environment is activated (`source .venv/bin/activate` or equivalent).
+1.  Ensure your virtual environment is activated (`source .venv/bin/activate` or similar).
 2.  Run the bot script: `python bot.py`
 3.  The console should indicate that the bot has connected successfully.
 
@@ -177,10 +177,10 @@ Interact with the bot in your Discord server using either:
 
 **Example Queries:**
 
-*   **Q&A:** `!algohelp what is an ASA?`
-*   **Doc Link:** `!algohelp link for AlgoKit installation` or `!algohelp docs for TEALScript`
-*   **AlgoKit Command:** `!algohelp algokit deploy command`
-*   **Network Status:** `!algohelp mainnet round` or `!algohelp testnet status`
+*   **Q&A:** `!algohelp what is an ASA?`, `!algohelp explain state proofs`
+*   **Doc Link:** `!algohelp link for AlgoKit installation`, `!algohelp docs for TEAL spec`
+*   **AlgoKit Command:** `!algohelp algokit deploy`, `!algohelp command init`
+*   **Network Status:** `!algohelp mainnet round`, `!algohelp testnet status`
 
 ## Configuration
 
