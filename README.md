@@ -54,7 +54,7 @@ The bot follows a modular architecture:
 *   **`.env`:** File for storing configuration and secrets (API keys, bot token).
 
 ```mermaid
-graph TD
+graph TD;
     A[User Message (Discord)] --> B(bot.py: on_message);
     B --> C{Parse & Route};
     C -- Q&A Query --> D[modules/qa_handler.py];
