@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands # Import commands
 
 # Import handlers from modules
-from modules import network_info
+from modules import network_info, qa_handler, doc_linker
 
 # Load environment variables from .env file
 dotenv.load_dotenv()
@@ -35,7 +35,12 @@ async def on_ready():
     """Called when the bot is ready and connected to Discord."""
     print(f'Logged in as {bot.user.name} (ID: {bot.user.id})')
     print('------')
-    # TODO: Potentially load data handlers here
+    # Pre-load data handlers on startup
+    print("Loading knowledge base...")
+    qa_handler.load_knowledge_base()
+    print("Loading document links...")
+    doc_linker.load_doc_links()
+    print("Data loaded.")
 
 @bot.event
 async def on_message(message):
@@ -50,22 +55,43 @@ async def on_message(message):
     if message.content.startswith(BOT_PREFIX):
         # Extract the query part after the prefix
         query = message.content[len(BOT_PREFIX):].strip()
-        print(f"Received command: '{query}' from {message.author.name}") # Log received command
+        query_lower = query.lower() # Use lowercase for matching intents
+        print(f"Received query: '{query}' from {message.author.name}") # Log received query
 
-        # --- Manual Routing Logic (as commands.Bot processes commands differently) ---
-        if query.lower() == "hello":
-            await message.channel.send(f"Hello {message.author.mention}!")
-        elif query.lower() == "ping":
-            await message.channel.send("Pong!")
-        # Add network status command
-        elif "round" in query.lower() or "network status" in query.lower():
-            # Determine network preference (default to mainnet)
-            network_pref = "testnet" if "testnet" in query.lower() else "mainnet"
-            status_message = await network_info.get_network_status_message(network_pref)
-            await message.channel.send(status_message)
-        else:
-            # Placeholder for unrecognised command or fallback to QA
-            await message.channel.send(f"Command '{query}' received, but not yet implemented.")
+        response = None # Initialize response variable
+
+        # --- Routing Logic ---
+        try:
+            # Priority 1: Documentation Link Request
+            doc_keywords = ["doc", "link for", "documentation", "url for"]
+            if any(keyword in query_lower for keyword in doc_keywords):
+                print(f"Attempting doc link lookup for: '{query}'")
+                response = doc_linker.get_doc_link(query) # Pass original query if case matters for keywords in JSON keys
+
+            # Priority 2: Network Status Request
+            elif "round" in query_lower or "network status" in query_lower or "block" in query_lower:
+                print(f"Attempting network status lookup for: '{query}'")
+                network_pref = "testnet" if "testnet" in query_lower else "mainnet"
+                response = await network_info.get_network_status_message(network_pref) # network_info is async
+
+            # Priority 3: General Q&A Fallback
+            elif query: # Check if query is not empty after stripping prefix
+                print(f"Attempting KB lookup for: '{query}'")
+                response = qa_handler.get_answer_from_kb(query)
+
+            # --- Handle Response / Fallback ---
+            if response:
+                await message.channel.send(response)
+            elif query: # Only send fallback if there was actually a query
+                fallback_message = "Sorry, I couldn't find specific information for that query. Try asking differently, or check the Algorand Developer Portal: https://dev.algorand.co/"
+                print(f"No specific handler response for: '{query}'. Sending fallback.")
+                await message.channel.send(fallback_message)
+            # If query was empty after prefix, do nothing
+
+        except Exception as e:
+            print(f"Error processing message: {e}") # Log error to console
+            # Optionally send a generic error message to the user
+            await message.channel.send("An error occurred while processing your request. Please try again later.")
 
     # Note: commands.Bot has its own command processing. If we define commands
     # using @bot.command(), this on_message might interfere or be redundant

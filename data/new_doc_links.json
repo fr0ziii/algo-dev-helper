@@ -1,1 +1,82 @@
-{}
+{
+    "algokit install guide": {
+      "topic": "AlgoKit Installation",
+      "url": "https://developer.algorand.org/docs/get-started/algokit/"
+    },
+    "create asa tutorial": {
+      "topic": "ASA Creation Tutorial",
+      "url": "https://developer.algorand.org/tutorials/create-and-configure-asset-using-sdk/"
+    },
+    "python sdk connect algod": {
+      "topic": "Connecting to Algod (Python SDK)",
+      "url": "https://developer.algorand.org/docs/sdks/python/"
+    },
+    "avm opcodes list": {
+      "topic": "AVM Opcodes Reference",
+      "url": "https://developer.algorand.org/docs/get_details/dapps/avm/teal/opcodes/"
+    },
+    "teal language spec": {
+      "topic": "TEAL Language Specification",
+      "url": "https://developer.algorand.org/docs/get_details/dapps/avm/teal/specification/"
+    },
+    "smart contract develop guide": {
+      "topic": "Smart Contract Development",
+      "url": "https://developer.algorand.org/docs/get_details/dapps/smart-contracts/"
+    },
+    "algokit project init": {
+      "topic": "Project Initialization with AlgoKit",
+      "url": "https://developer.algorand.org/docs/get-started/algokit/#initialize-a-new-project"
+    },
+    "algokit localnet setup": {
+      "topic": "LocalNet Setup with AlgoKit",
+      "url": "https://developer.algorand.org/docs/get-started/algokit/#localnet"
+    },
+    "transactions fees algorand": {
+      "topic": "Transactions and Fees",
+      "url": "https://developer.algorand.org/docs/get_details/transactions/"
+    },
+    "consensus mechanism algorand": {
+      "topic": "Algorand Consensus Mechanism",
+      "url": "https://developer.algorand.org/docs/get_details/algorand_consensus/"
+    },
+    "cryptographic sortition algorand": {
+      "topic": "Cryptographic Sortition in Algorand",
+      "url": "https://developer.algorand.org/docs/get_details/algorand_consensus/#cryptographic-sortition"
+    },
+    "state proofs algorand": {
+      "topic": "State Proofs",
+      "url": "https://developer.algorand.org/docs/get_details/stateproofs/"
+    },
+    "atomic transfers tutorial": {
+      "topic": "Atomic Transfers",
+      "url": "https://developer.algorand.org/docs/get_details/atomic_transfers/"
+    },
+    "rekey accounts guide": {
+      "topic": "Rekeying Accounts",
+      "url": "https://developer.algorand.org/docs/get_details/accounts/#rekeying"
+    },
+    "governance participation algorand": {
+      "topic": "Algorand Governance",
+      "url": "https://developer.algorand.org/docs/get_details/governance/"
+    },
+    "rest api reference": {
+      "topic": "REST API Reference",
+      "url": "https://developer.algorand.org/docs/rest-apis/algod/v2/"
+    },
+    "pure proof stake algorand": {
+      "topic": "Pure Proof-of-Stake in Algorand",
+      "url": "https://developer.algorand.org/docs/get_details/algorand_consensus/#pure-proof-of-stake"
+    },
+    "account model algorand": {
+      "topic": "Algorand Account Model",
+      "url": "https://developer.algorand.org/docs/get_details/accounts/"
+    },
+    "goal cli commands": {
+      "topic": "Goal CLI Reference",
+      "url": "https://developer.algorand.org/docs/clis/goal/"
+    },
+    "node setup config": {
+      "topic": "Node Setup and Configuration",
+      "url": "https://developer.algorand.org/docs/run-a-node/setup/install/"
+    }
+  }
