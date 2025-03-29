@@ -55,7 +55,7 @@ The bot follows a modular architecture:
 
 ```mermaid
 graph TD;
-    A[User Message (Discord)] --> B(bot.py: on_message);
+    A[User Message on Discord] --> B(bot.py: on_message);
     B --> C{Parse & Route};
     C -- Q&A Query --> D[modules/qa_handler.py];
     C -- Doc Link Query --> E[modules/doc_linker.py];
