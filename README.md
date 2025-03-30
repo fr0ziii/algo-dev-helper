@@ -2,7 +2,7 @@
   <img src="algorand-logo.jpg" alt="Algorand Logo" width="400"/>
 </p>
 
-<h1 style="text-align:center;">AlgoDevHelper AI</h1>
+<h1 align="center" style="text-align:center;">AlgoDevHelper AI</h1>
 
 ## Introduction
 
