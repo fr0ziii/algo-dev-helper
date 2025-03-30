@@ -10,11 +10,13 @@ AlgoDevHelper AI is an interactive Discord bot designed to be an indispensable, 
 
 It addresses the friction developers face due to information fragmentation, the learning curve of new tools, the need for quick recall/reference, accessing real-time network data, and navigating community channel noise, all directly within the Discord workflow.
 
+**Why is this useful for the Hackathon & Beyond?** During intense development sprints like a hackathon, quick access to accurate information is crucial. This bot serves as an immediate resource within the primary communication platform (Discord), helping participants quickly find answers to common questions, look up AlgoKit commands, and get links to the latest documentation without breaking their flow. This accelerates development, reduces frustration, and helps solidify learning around Algorand's newest tools and practices, benefiting both hackathon participants and the wider developer community afterwards.
+
 ## Status
 
-**MVP Complete & Polished (Hackathon Project)**
+**Functional & Polished**
 
-This project was initiated and the Minimum Viable Product (MVP), including initial polishing (code comments, documentation), was completed during the Algorand Developer Retreat hackathon (March 2025). The bot is ready for demonstration.
+This project was initiated during the Algorand Developer Retreat hackathon (March 2025). The core features are implemented, tested, and documented. The bot is functional and ready for use or further development.
 
 ## Features
 
@@ -135,10 +137,22 @@ Follow these steps to set up and run the bot locally for development or testing:
         python -m venv .venv
         ```
     *   Activate the environment:
-        *   macOS/Linux (bash/zsh): `source .venv/bin/activate`
-        *   Windows (Git Bash): `source .venv/Scripts/activate`
-        *   Windows (CMD): `.venv\Scripts\activate.bat`
-        *   Windows (PowerShell): `.venv\Scripts\Activate.ps1`
+        *   macOS/Linux (bash/zsh):
+            ```bash
+            source .venv/bin/activate
+            ```
+        *   Windows (Git Bash):
+            ```bash
+            source .venv/Scripts/activate
+            ```
+        *   Windows (CMD):
+            ```bat
+            .venv\Scripts\activate.bat
+            ```
+        *   Windows (PowerShell):
+            ```powershell
+            .venv\Scripts\Activate.ps1
+            ```
         (You should see `(.venv)` at the beginning of your terminal prompt).
 
 7.  **Install Dependencies:**
@@ -164,8 +178,14 @@ Follow these steps to set up and run the bot locally for development or testing:
     *   **Important:** Ensure `.env` is added to your `.gitignore` file to prevent committing secrets.
 
 9.  **Set Up Data Directory:**
-    *   Create a directory named `data` in the project root: `mkdir data`
-    *   Download the knowledge base file: `curl https://dev.algorand.co/llms-small.txt -o data/llms-small.txt`
+    *   Create a directory named `data` in the project root:
+        ```bash
+        mkdir data
+        ```
+    *   Download the knowledge base file:
+        ```bash
+        curl https://dev.algorand.co/llms-small.txt -o data/llms-small.txt
+        ```
     *   *(The `data/llms-small.txt`, `data/new_doc_links.json`, and `data/algokit_commands.json` files should already exist if you cloned the repository).*
 
 ## Running the Bot Locally
@@ -191,6 +211,17 @@ Interact with the bot in your Discord server using either:
 *   **AlgoKit Command:** `!algohelp algokit deploy`, `!algohelp command init`
 *   **Network Status:** `!algohelp mainnet round`, `!algohelp testnet status`
 
+## Testing
+
+Unit tests have been implemented for the core handler modules using Python's built-in `unittest` framework.
+
+1.  Ensure your Python virtual environment is activated.
+2.  Run the tests from the project root directory:
+    ```bash
+    python -m unittest discover tests/
+    ```
+    (The `tests/` directory contains the test files, e.g., `test_qa_handler.py`).
+
 ## Configuration
 
 The following environment variables are configured in the `.env` file:
@@ -214,6 +245,16 @@ Potential ways to contribute (post-hackathon):
 *   Improve code quality, add tests, or enhance documentation.
 
 Please follow the standard fork and pull request workflow for contributions.
+
+## Future Considerations
+
+While the core functionality is in place, potential future enhancements include:
+
+*   **Long-Term Goals:** Implementing features outlined in the original project brief, such as comprehensive knowledge base expansion, a rich code snippet library, Indexer integration, more sophisticated NLU/NLP, a user feedback mechanism, and containerization (Docker).
+*   **Q&A Scalability:** Refactoring the Q&A handler (`qa_handler.py`) to efficiently manage larger knowledge bases (like `llms-full.txt`), potentially using indexing (e.g., TF-IDF, embeddings) or a dedicated search mechanism.
+*   **Linting & Formatting:** Establishing and enforcing specific code style standards (e.g., using `flake8` and `black`).
+*   **Testing Strategy:** Expanding the testing suite beyond the current unit tests (e.g., integration tests).
+*   **Doc Linker Triggering:** Refining the logic in `bot.py` to better detect requests for documentation links even when specific keywords aren't used.
 
 ## License
 
